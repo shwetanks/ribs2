@@ -24,6 +24,10 @@
 #define _GNU_SOURCE
 #endif
 
+#ifdef _GNU_SOURCE
+#define __USE_GNU 1
+#endif
+
 #include <stddef.h>
 #include <unistd.h>
 #include <stdlib.h>
