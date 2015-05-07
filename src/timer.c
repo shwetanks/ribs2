@@ -30,14 +30,12 @@ static void _ribs_timer_wrapper(void) {
     void (**handler)(int) = (void (**)(int))current_ctx->reserved;
     for (;;yield()) {
         uint64_t num_exp;
-        ssize_t res;
-        if (sizeof(num_exp) == (res = read(last_epollev.data.fd, &num_exp, sizeof(num_exp))))
-            (*handler)(last_epollev.data.fd);
-        if (0 > res) {
+        if (sizeof(num_exp) != read(last_epollev.data.fd, &num_exp, sizeof(num_exp))) {
             if (errno != EAGAIN)
-                LOGGER_PERROR("timerfd (%d)", last_epollev.data.fd);
-        } else
-            LOGGER_ERROR("size mismatch when reading from timerfd: %d", last_epollev.data.fd);
+                LOGGER_ERROR("size mismatch when reading from timerfd: %d", last_epollev.data.fd);
+            continue;
+        }
+        (*handler)(last_epollev.data.fd);
     }
 }
 
